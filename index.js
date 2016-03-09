@@ -2,52 +2,44 @@ var Pushable = require('pull-pushable')
 var Stats = require('statistics')
 var pull = require('pull-stream')
 
-exports.server = function (cb) {
-  var count = 0, source = Pushable(), ts
+module.exports = function (opts) {
+  var timeout = opts && opts.timeout || 5*60*1000 //default: 5 minutes
+  var serve = false, timer
+  var source = Pushable()
   var rtt = Stats(), skew = Stats()
+
+  function ping () {
+    //serve the ping pong, opponent
+    //will volley it back to us, keeping connection alive
+    //and revealing clock skew.
+    serve = true
+    source.push(ts = Date.now())
+  }
+
+  //we send the first ping
+  if(opts && opts.serve) ping()
+
   return {
     source: source,
     sink: pull.drain(function (remote_ts) {
-      if(++count%2) {
-        ts = Date.now()
-        source.push(ts)
-      } else {
+      if(serve) {
         var ts2 = Date.now()
         rtt.value(ts2 - ts)
-        skew.value(remote_ts - ((ts + ts2)/2))
+        //if their time is behind half a round trip behing ts2
+        //consider that to be negative skew.
+        skew.value(remote_ts - ((ts2 + ts)/2))
+        serve = false
       }
-    }, cb),
-    rtt: rtt,
-    skew: skew
-  }
-}
-
-exports.client = function (interval, cb) {
-  var source = Pushable(), ts = Date.now(), timeout
-  var rtt = Stats(), skew = Stats()
-  source.push(ts)
-  function sched () {
-    if(timeout) return
-    timeout = setTimeout(function () {
-      timeout = null
-      source.push(ts = Date.now())
-    }, interval)
-  }
-  return {
-    source: source,
-    sink: pull.drain(function (remote_ts) {
-      var ts2 = Date.now()
-      console.log(ts, ts2, ts2 - ts)
-      rtt.value(ts2 - ts)
-      skew.value(remote_ts - ((ts + ts2)/2))
-      //echo the time again, so the server knows the skew here...
-      sched()
-      source.push(ts2)
+      else {
+        //volley timestamp back to opponent.
+        source.push(ts = Date.now())
+        //we'll serve next time.
+        timer = setTimeout(ping, timeout)
+      }
     }, function (err) {
-      clearInterval(timeout); cb && cb(err)
+      clearTimeout(timer)
     }),
-    rtt: rtt,
-    skew: skew
+    rtt: rtt, skew: skew
   }
-}
 
+}
