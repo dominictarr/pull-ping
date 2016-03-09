@@ -1,11 +1,11 @@
 {
-  "name": "pull-ping-pong",
-  "description": "",
+  "name": "pull-ping",
+  "description": "measure latency/rtt and clock skew with pull-streams",
   "version": "1.0.0",
-  "homepage": "https://github.com/dominictarr/pull-ping-pong",
+  "homepage": "https://github.com/dominictarr/pull-ping",
   "repository": {
     "type": "git",
-    "url": "git://github.com/dominictarr/pull-ping-pong.git"
+    "url": "git://github.com/dominictarr/pull-ping-pong"
   },
   "dependencies": {
     "pull-pushable": "^2.0.0",
