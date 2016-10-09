@@ -18,6 +18,12 @@ tape('symmetrical pingpong', function (t) {
   var server = pingpong({timeout: 20})
   var client = pingpong({timeout: 20, serve: true})
 
+  t.ok(server.rtt)
+  t.ok(server.skew)
+
+  t.equal(server.rtt.mean, 0)
+  t.equal(server.skew.mean, 0)
+
   pull(
     client,
     delay(10),
@@ -40,6 +46,8 @@ tape('symmetrical pingpong', function (t) {
 
 
 })
+
+
 
 
 
