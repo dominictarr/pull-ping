@@ -6,7 +6,7 @@ module.exports = function (opts) {
   var timeout = opts && opts.timeout || 5*60*1000 //default: 5 minutes
   var serve = false, timer
   var source = Pushable()
-  var rtt = null, skew = null
+  var rtt = stats.initial(), skew = stats.initial()
 
   function ping () {
     //serve the ping pong, opponent
@@ -44,3 +44,4 @@ module.exports = function (opts) {
   }
 
 }
+
