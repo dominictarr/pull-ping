@@ -1,5 +1,5 @@
 var Pushable = require('pull-pushable')
-var stats = require('statistics')
+var stats = require('statistics/mutate')
 var Drain = require('pull-stream/sinks/drain')
 
 module.exports = function (opts) {
