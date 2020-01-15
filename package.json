@@ -5,7 +5,7 @@
   "homepage": "https://github.com/dominictarr/pull-ping",
   "repository": {
     "type": "git",
-    "url": "git://github.com/dominictarr/pull-ping-pong"
+    "url": "git://github.com/dominictarr/pull-ping"
   },
   "dependencies": {
     "pull-pushable": "^2.0.0",
